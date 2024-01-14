@@ -5,7 +5,7 @@
             <label for="name" class="form-label">
                 Please, write your Full name
             </label>
-            <input type="text" name="name" id="name" required
+            <input type="text" name="name" id="name"
                    @if(isset($user)) value="{{$user->name}}" @endif>
         </div>
 
@@ -13,7 +13,7 @@
             <label for="email" class="form-label">
                 Provide an email
             </label>
-            <input class="form-input" type="text" name="email" id="email" required
+            <input class="form-input" type="text" name="email" id="email"
                    @if(isset($user)) value="{{$user->email}}" @endif>
             @if(isset($_GET['errNo']))
                 <br><br>
@@ -25,9 +25,18 @@
             <label class="form-label" for="password"><br>
                 Type a password
             </label>
-            <input type="password" name="password" id="password" required>
+            <input type="password" name="password" id="password">
         </div>
 
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <button type="submit" class="btn btn-secondary" style="margin-top: 20px">Submit</button>
     </form>
 </x-layout>

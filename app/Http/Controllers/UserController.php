@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\{Hash, Validator};
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class UserController extends Controller
@@ -30,15 +32,16 @@ class UserController extends Controller
 
     public function addUser(Request $request): RedirectResponse
     {
-        $check = trim($request->input('email'));
-        if (User::query()->where('email', $check)->count() > 0) {
-            return to_route('users_create', ['errNo' => '1']);
-        }
+        $valid = $request->validate([
+            'name' => ['required', 'string', 'min:3'],
+            'email' => ['required', 'email', 'unique:App\Models\User,email'],
+            'password' => ['required', 'min:6'],
+        ]);
         $user = User::create([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
+            'name' => $valid['name'],
+            'email' => $valid['email'],
             'email_verified_at' => now(),
-            'password' => Hash::make($request->input('password')),
+            'password' => Hash::make($valid['password']),
             'remember_token' => Str::random(10),
         ]);
         $user->save();
@@ -54,17 +57,17 @@ class UserController extends Controller
 
     public function editUser($id, Request $request): RedirectResponse
     {
-        $checkEmail = trim($request->input('email'));
-        if (User::query()->where('email', $checkEmail)->whereNot('id', $id)->count() > 0) {
-            return to_route('users.edit', ['errNo' => '1']);
-        }
-
         $user = User::query()->findOrFail($id);
+        $valid = $request->validate([
+            'name' => ['required', 'string', 'min:3'],
+            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+            'password' => ['required', 'min:6'],
+        ]);
         $user->update([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
+            'name' => $valid['name'],
+            'email' => $valid['email'],
             'email_verified_at' => now(),
-            'password' => Hash::make($request->input('password')),
+            'password' => Hash::make($valid['password']),
         ]);
         return to_route('users_list');
     }
