@@ -36,12 +36,19 @@ class EventController extends Controller
 
     public function addEvent(Request $request): RedirectResponse
     {
+        $valid = $request->validate([
+            'title' => ['required', 'min:3', 'string'],
+            'user_id' => ['required', 'exists:App\Models\User,id'],
+            'notes' => ['required', 'min:3'],
+            'date_start' => ['required', 'date'],
+            'date_end' => ['required', 'date'],
+        ]);
         $event = Event::create([
-            'title' => $request->input('title'),
-            'user_id' => $request->input('user_id'),
-            'notes' => $request->input('notes'),
-            'dt_start' => $request->input('dt_start'),
-            'dt_end' => $request->input('dt_end'),
+            'title' => $valid['title'],
+            'user_id' => $valid['user_id'],
+            'notes' => $valid['notes'],
+            'dt_start' => $valid['date_start'],
+            'dt_end' => $valid['date_end'],
         ]);
         $event->save();
         return to_route('events');
@@ -57,13 +64,21 @@ class EventController extends Controller
 
     public function editEvent($id, Request $request): RedirectResponse
     {
+        $valid = $request->validate([
+            'title' => ['required', 'min:3', 'string'],
+            'user_id' => ['required', 'exists:App\Models\User,id'],
+            'notes' => ['required', 'min:3'],
+            'date_start' => ['required', 'date'],
+            'date_end' => ['required', 'date'],
+        ]);
+
         $event = Event::query()->findOrFail($id);
         $event->update([
-            'title' => $request->input('title'),
-            'user_id' => $request->input('user_id'),
-            'notes' => $request->input('notes'),
-            'dt_start' => $request->input('dt_start'),
-            'dt_end' => $request->input('dt_end'),
+            'title' => $valid['title'],
+            'user_id' => $valid['user_id'],
+            'notes' => $valid['notes'],
+            'dt_start' => $valid['date_start'],
+            'dt_end' => $valid['date_end'],
         ]);
         return to_route('events');
     }

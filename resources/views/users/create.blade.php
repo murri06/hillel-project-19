@@ -26,7 +26,7 @@
                 Type a password
             </label>
             <input type="password" name="password" id="password">
-        </div>
+        </div><br>
 
         @if ($errors->any())
             <div class="alert alert-danger">
