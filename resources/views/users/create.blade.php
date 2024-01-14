@@ -1,5 +1,5 @@
 <x-layout>
-    <form method="post" style="max-width: 50vw">
+    <form method="post" style="max-width: 30vw">
         @csrf
         <div class="col-3">
             <label for="name" class="form-label">
